@@ -14,11 +14,14 @@ await seed(db, schema).refine((f) => {
       },
       // DESSA FORMA, SERÁ CRIADO 5 QUESTOES PARA CADA ROOM (SALA)
       // with: {
-      //   questions: 5,
+      //   questions: 17,
       // },
     },
     questions: {
-      count: 15,
+      count: 150,
+      columns: {
+        question: f.loremIpsum(),
+      }
     }
   };
 });
