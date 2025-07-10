@@ -14,7 +14,7 @@ export const getRoomQuestions: FastifyPluginCallbackZod = async (app) => {
         }),
       },
     },
-    async (request, reply) => {
+    async (request) => {
       const { roomId } = request.params;
 
       const result = await db
