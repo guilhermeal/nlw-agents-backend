@@ -8,6 +8,13 @@
       "when": 1752030483772,
       "tag": "0000_open_toad",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752113863557,
+      "tag": "0001_quick_senator_kelly",
+      "breakpoints": true
     }
   ]
 }

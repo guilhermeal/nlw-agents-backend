@@ -12,10 +12,15 @@ await seed(db, schema).refine((f) => {
         name: f.companyName(),
         description: f.loremIpsum(),
       },
+      // DESSA FORMA, SERÁ CRIADO 5 QUESTOES PARA CADA ROOM (SALA)
+      // with: {
+      //   questions: 5,
+      // },
     },
+    questions: {
+      count: 15,
+    }
   };
 });
 
 await sql.end();
-
-console.log("Database seeded successfully.");
