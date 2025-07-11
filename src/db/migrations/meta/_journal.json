@@ -15,6 +15,20 @@
       "when": 1752113863557,
       "tag": "0001_quick_senator_kelly",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752201518735,
+      "tag": "0002_tranquil_black_tom",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1752203274669,
+      "tag": "0003_even_lenny_balinger",
+      "breakpoints": true
     }
   ]
 }
