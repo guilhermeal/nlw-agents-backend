@@ -49,3 +49,14 @@ Content-Type: application/json
 {
     "question": "Esta é uma nova questão de testes de testes"
 }
+
+###
+
+# Create question
+# @name createQuestion
+POST {{baseUrl}}/rooms/6b70810c-74ff-4ce9-2665-dbe392f0610b/questions
+Content-Type: application/json
+
+{
+    "question": "Quem é o Batman?"
+}

@@ -15,7 +15,7 @@ export const transcribeAUdio = async (
     model,
     contents: [
       {
-        text: "Transcreva o áudio para português do Brasil. Seja preciso e natural na transcrição. Mantenha a pontuação adequada para o padrão brasileiro e divida o texto em parágrafos quando for apropriado.",
+        text: "Transcreva o áudio para português do Brasil. Seja preciso e natural na transcrição. Mantenha a pontuação adequada para o padrão brasileiro e divida o texto em parágrafos quando for apropriado. Não transcreva e nem considere mencionar sons externos, como ruídos, barulhos, músicas de fundo. Reconheça na fidelidade da voz da pessoa e considere a transcrição do que o narrador está falando.",
       },
       {
         inlineData: {
@@ -47,4 +47,44 @@ export const generateEmbeddings = async (text: string) => {
   }
 
   return response.embeddings[0].values;
+};
+
+export const generateAnswer = async (
+  question: string,
+  transcriptions: string[]
+) => {
+  const context = transcriptions.join("\n\n");
+
+  const prompt = `
+    Com base no texto fornecido abaixo como contexto, responda a pergunta de forma clara e precisa em português do Brasil, respeitando todas as regras gramaticais e de concordância verbal. 
+
+    CONTEXTO:
+    ${context}
+
+    PERGUNTA:
+    ${question}
+
+    INSTRUÇÕES:
+    - Use apenas informações contidas no contexto enviado;
+    - Se a resposta não for encontrada no contexto, apenas responda que não possui informações suficientes para responder a esta pergunta;
+    - Seja objetivo e educado;
+    - Mantenha um tom educativo e profissional;
+    - Cite trechos relevantes do contexto se apropriado;
+    - Se for citar o contexto, utilize o termo "conteúdo da aula";
+  `.trim();
+
+  const response = await gemini.models.generateContent({
+    model,
+    contents: [
+      {
+        text: prompt,
+      },
+    ],
+  });
+
+  if (!response.text) {
+    throw new Error("Falha ao gerar responsta pelo Gemini");
+  }
+
+  return response.text;
 };
