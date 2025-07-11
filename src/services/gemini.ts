@@ -15,7 +15,7 @@ export const transcribeAUdio = async (
     model,
     contents: [
       {
-        text: "Transcreva o áudio para português do Brasil. Seja preciso e natural na transcrição. Mantenha a pontuação adequada para o padrão brasileiro e divida o texto em parágrafos quando for apropriado. Não transcreva e nem considere mencionar sons externos, como ruídos, barulhos, músicas de fundo. Reconheça na fidelidade da voz da pessoa e considere a transcrição do que o narrador está falando.",
+        text: "Transcreva o áudio para português do Brasil. Seja preciso e natural na transcrição. Mantenha a pontuação adequada para o padrão brasileiro e divida o texto em parágrafos quando for apropriado. Não transcreva e nem considere mencionar sons externos, como ruídos, barulhos, músicas de fundo. Reconheça na fidelidade da voz da pessoa e considere a transcrição do que o narrador está falando. Evite retornar na transcrição onomatopéias e frases como: 'Não há fala detectada no áudio.' ",
       },
       {
         inlineData: {
