@@ -1,5 +1,6 @@
 # Variables
 @baseUrl = http://localhost:3333
+@authToken = nlw-agents-secret-token-2025
 
 # Health check
 # @name healthCheck
@@ -13,9 +14,10 @@ GET {{baseUrl}}/rooms
 
 ###
 
-# Create room
+# Create room (protegido)
 # @name createRoom
 POST {{baseUrl}}/rooms
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -29,21 +31,24 @@ Content-Type: application/json
 
 ###
 
-# Get room and own questions
+# Get room and own questions (protegido)
 # @name getRoomAndQuestions
 GET {{baseUrl}}/rooms/{{roomId}}
+Authorization: Bearer {{authToken}}
 
 ###
 
-# Get room questions
+# Get room questions (protegido)
 # @name getRoomQuestions
 GET {{baseUrl}}/rooms/{{roomId}}/questions
+Authorization: Bearer {{authToken}}
 
 ###
 
-# Create question
+# Create question (protegido)
 # @name createQuestion
 POST {{baseUrl}}/rooms/{{roomId}}/questions
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
@@ -52,11 +57,18 @@ Content-Type: application/json
 
 ###
 
-# Create question
-# @name createQuestion
+# Create question (protegido)
+# @name createQuestion2
 POST {{baseUrl}}/rooms/6b70810c-74ff-4ce9-2665-dbe392f0610b/questions
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
     "question": "Quem é o Batman?"
 }
+
+###
+
+# ❌ Teste sem token (deve dar erro 401)
+# @name testWithoutToken
+GET {{baseUrl}}/rooms/6b70810c-74ff-4ce9-2665-dbe392f0610b

@@ -12,14 +12,15 @@ import { createRoomRoute } from "./http/routes/create-room.ts";
 import { getRoomQuestions } from "./http/routes/get-room-questions.ts";
 import { getRoomAndQuestions, getRoomsRoute } from "./http/routes/get-rooms.ts";
 import { uploadAudioRoute } from "./http/routes/upload-audio.ts";
-import { getLocalIP } from './utils/network.ts';
+import { authenticateToken } from "./middleware/auth.ts";
+import { getLocalIP } from "./utils/network.ts";
 
 const app = fastify({
   logger: true,
 }).withTypeProvider<ZodTypeProvider>();
 
 app.register(fastifyCors, {
-  origin: "https://nlw-agents-frontend.vercel.app",
+  origin: env.ENVIROMENT === "DEVELOPMENT" ? true : env.URL_ORIGIN,
 });
 
 app.register(fastifyMultipart);
@@ -31,25 +32,35 @@ app.get("/health", () => {
   return "OK";
 });
 
-app.register(getRoomsRoute);
-app.register(getRoomAndQuestions);
-app.register(createRoomRoute);
-app.register(getRoomQuestions);
-app.register(createQuestionRoute);
-app.register(uploadAudioRoute);
+// 📊 Rotas públicas (sem autenticação)
+
+// 🔐 Rotas protegidas (com token simples)
+app.register(async function protectedRoutes(app) {
+  // Aplicar middleware a todas as rotas deste grupo
+  app.addHook("onRequest", authenticateToken);
+  
+  // Registrar rotas protegidas
+  app.register(getRoomsRoute);
+  app.register(getRoomAndQuestions);
+  app.register(createRoomRoute);
+  app.register(getRoomQuestions);
+  app.register(createQuestionRoute);
+  app.register(uploadAudioRoute);
+});
 
 // Configuração para escutar em todas as interfaces
 const start = async () => {
   try {
-    const host = '0.0.0.0';
+    const host = "0.0.0.0";
     const port = Number(process.env.PORT) || 3333;
-    
+
     await app.listen({ port, host });
-    
+
     const localIP = getLocalIP();
     console.log(`🚀 Server is running on:`);
     console.log(`   Local:    http://localhost:${port}`);
     console.log(`   Network:  http://${localIP}:${port}`);
+    console.log(`🔐 Auth Token: ${env.AUTH_TOKEN}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);
