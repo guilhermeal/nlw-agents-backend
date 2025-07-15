@@ -19,7 +19,7 @@ const app = fastify({
 }).withTypeProvider<ZodTypeProvider>();
 
 app.register(fastifyCors, {
-  origin: "http://localhost:5173",
+  origin: "https://nlw-agents-frontend.vercel.app",
 });
 
 app.register(fastifyMultipart);

@@ -53,7 +53,6 @@ export const getRoomAndQuestions: FastifyPluginCallbackZod = async (app) => {
       if (room.length === 0) {
         throw new Error("Room not found");
       }
-      console.log("rrom", room);
 
       const questions = await db
         .select({
