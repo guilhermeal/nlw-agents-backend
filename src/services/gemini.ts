@@ -88,3 +88,41 @@ export const generateAnswer = async (
 
   return response.text;
 };
+
+export const generateSummary = async (transcriptions: string[]) => {
+  const context = transcriptions.join("\n\n");
+
+  const prompt = `
+  Com base no texto fornecido abaixo como contexto, gere um resumo lógico e inteligente em português do Brasil, mantendo a conexão dos argumentos, sinergia das palavras e preservando o contexto original das informações apresentadas.
+
+    CONTEXTO:
+    ${context}
+
+    INSTRUÇÕES:
+    - Crie um resumo estruturado e coerente que mantenha a inteligência e fluidez do conteúdo original;
+    - Preserve as conexões lógicas entre os conceitos e argumentos apresentados;
+    - Mantenha a sinergia entre as ideias, respeitando o encadeamento natural dos tópicos;
+    - Use apenas informações contidas no contexto enviado;
+    - Se não houver informações suficientes no contexto, responda que não possui conteúdo adequado para gerar este resumo;
+    - Organize as informações de forma didática e progressiva;
+    - Mantenha um tom educativo e profissional;
+    - Preserve a essência e os pontos-chave do "conteúdo da aula";
+    - Conecte os temas de forma natural, demonstrando a relação entre os conceitos;
+    - Respeite todas as regras gramaticais e de concordância verbal do português brasileiro;
+  `.trim();
+
+  const response = await gemini.models.generateContent({
+    model,
+    contents: [
+      {
+        text: prompt,
+      },
+    ],
+  });
+
+  if (!response.text) {
+    throw new Error("Falha ao gerar resumo pelo Gemini");
+  }
+
+  return response.text;
+};

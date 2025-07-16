@@ -9,6 +9,7 @@ import {
 import { env } from "./env.ts";
 import { createQuestionRoute } from "./http/routes/create-question.ts";
 import { createRoomRoute } from "./http/routes/create-room.ts";
+import { getRoomChunksSummary } from "./http/routes/get-room-chunks-summary.ts";
 import { getRoomQuestions } from "./http/routes/get-room-questions.ts";
 import { getRoomAndQuestions, getRoomsRoute } from "./http/routes/get-rooms.ts";
 import { uploadAudioRoute } from "./http/routes/upload-audio.ts";
@@ -38,10 +39,11 @@ app.get("/health", () => {
 app.register(async function protectedRoutes(app) {
   // Aplicar middleware a todas as rotas deste grupo
   app.addHook("onRequest", authenticateToken);
-  
+
   // Registrar rotas protegidas
   app.register(getRoomsRoute);
   app.register(getRoomAndQuestions);
+  app.register(getRoomChunksSummary);
   app.register(createRoomRoute);
   app.register(getRoomQuestions);
   app.register(createQuestionRoute);

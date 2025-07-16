@@ -11,6 +11,8 @@ GET {{baseUrl}}/health
 # Get rooms
 # @name getRooms
 GET {{baseUrl}}/rooms
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
 
 ###
 
@@ -42,6 +44,16 @@ Authorization: Bearer {{authToken}}
 # @name getRoomQuestions
 GET {{baseUrl}}/rooms/{{roomId}}/questions
 Authorization: Bearer {{authToken}}
+
+###
+
+###
+
+# Get room summary (protegido)
+# @name getRoomSummary
+GET {{baseUrl}}/rooms/{{roomId}}/summary
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
 
 ###
 
