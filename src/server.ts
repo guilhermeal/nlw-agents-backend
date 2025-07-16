@@ -15,6 +15,7 @@ import { getRoomAndQuestions, getRoomsRoute } from "./http/routes/get-rooms.ts";
 import { uploadAudioRoute } from "./http/routes/upload-audio.ts";
 import { authenticateToken } from "./middleware/auth.ts";
 import { getLocalIP } from "./utils/network.ts";
+import { getRoomTranscription } from "./http/routes/get-room-transcription.ts";
 
 const app = fastify({
   logger: true,
@@ -44,6 +45,7 @@ app.register(async function protectedRoutes(app) {
   app.register(getRoomsRoute);
   app.register(getRoomAndQuestions);
   app.register(getRoomChunksSummary);
+  app.register(getRoomTranscription);
   app.register(createRoomRoute);
   app.register(getRoomQuestions);
   app.register(createQuestionRoute);

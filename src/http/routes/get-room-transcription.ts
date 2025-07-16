@@ -3,11 +3,10 @@ import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod";
 import z from "zod/v4";
 import { db } from "../../db/connection.ts";
 import { schema } from "../../db/schema/index.ts";
-import { generateSummary } from "../../services/gemini.ts";
 
-export const getRoomChunksSummary: FastifyPluginCallbackZod = async (app) => {
+export const getRoomTranscription: FastifyPluginCallbackZod = async (app) => {
   app.get(
-    "/rooms/:roomId/summary",
+    "/rooms/:roomId/transcription",
     {
       schema: {
         params: z.object({
@@ -18,7 +17,7 @@ export const getRoomChunksSummary: FastifyPluginCallbackZod = async (app) => {
     async (request, reply) => {
       const { roomId } = request.params;
 
-      const summary = await db
+      const chunks = await db
         .select({
           id: schema.audioChunks.id,
           transcription: schema.audioChunks.transcription,
@@ -27,15 +26,16 @@ export const getRoomChunksSummary: FastifyPluginCallbackZod = async (app) => {
         .where(and(eq(schema.audioChunks.roomId, roomId)))
         .orderBy(asc(schema.audioChunks.createdAt));
 
-      if (summary.length > 0) {
-        const transcriptions = summary.map((chunk) => chunk.transcription);
+      if (chunks.length > 0) {
+        const result = chunks.map((chunk) => chunk.transcription).join("\n");
 
-        const result = await generateSummary(transcriptions);
-
-        return reply.status(201).send({ summary: result });
+        return reply.status(201).send({
+          transcription: result,
+          chunksCount: chunks.length,
+        });
       }
 
-      return reply.status(204).send({ summary: undefined });
+      return reply.status(204).send({ transcription: undefined });
     }
   );
 };
