@@ -1,0 +1,51 @@
+import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod";
+import z from "zod/v4";
+import { generateProductLink } from "../../services/gemini.ts";
+
+function messageToJson(rawMessage: string) {
+  const escapedMessage = rawMessage.replace(/\n/g, "\\n");
+  return {
+    message: escapedMessage,
+  };
+}
+
+export const createProductLink: FastifyPluginCallbackZod = async (app) => {
+  app.post(
+    "/product",
+    {
+      schema: {
+        body: z.object({
+          message: z.string().min(1),
+        }),
+      },
+    },
+    async (request, reply) => {
+      const { message } = request.body;
+
+      if (!message) {
+        return reply.status(401);
+      }
+
+      const parsedMessage = JSON.stringify(messageToJson(message), null, 2);
+
+      const answer = await generateProductLink(parsedMessage);
+
+      // const result = await db
+      //   .insert(schema.questions)
+      //   .values({
+      //     roomId,
+      //     question,
+      //     answer,
+      //   })
+      //   .returning();
+
+      // const insertedQuestion = result[0];
+
+      // if (!insertedQuestion) {
+      //   throw new Error("Failed to create new question.");
+      // }
+
+      return reply.status(201).send(answer);
+    }
+  );
+};

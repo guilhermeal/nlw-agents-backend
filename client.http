@@ -47,6 +47,12 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# Get room summary (protegido)
+# @name getRoomTranscription
+GET {{baseUrl}}/rooms/{{roomId2}}/transcription
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
 ###
 
 # Get room summary (protegido)
@@ -77,6 +83,17 @@ Content-Type: application/json
 
 {
     "question": "Quem é o Batman?"
+}
+
+###
+
+# Create Product Link
+# @name createProductLink
+POST {{baseUrl}}/product
+Content-Type: application/json
+
+{
+    "message": "💖 Jogo de Talheres 18 36 54 e 72 Peças Garfo Faca e Colher Prime Cozinha Aço Inox Premium ❌ De R$ 82,97 ✅ Por R$ 24,89 ⭐⭐⭐⭐⭐ (Bem Avaliado) Compre no link👇🏼🛍️ ➡️ https://s.shopee.com.br/9ADnTovy46"
 }
 
 ###
