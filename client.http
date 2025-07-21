@@ -93,7 +93,18 @@ POST {{baseUrl}}/product
 Content-Type: application/json
 
 {
-    "message": "💖 Jogo de Talheres 18 36 54 e 72 Peças Garfo Faca e Colher Prime Cozinha Aço Inox Premium ❌ De R$ 82,97 ✅ Por R$ 24,89 ⭐⭐⭐⭐⭐ (Bem Avaliado) Compre no link👇🏼🛍️ ➡️ https://s.shopee.com.br/9ADnTovy46"
+    "message": "Apple AirPods 4 Por R$1.089🔥  👉  Pegar promoção: https://amzn.to/44Yn8FA Agora,na Amazon!"
+}
+
+###
+
+# Post Amazon Product Link
+# @name postAmazonProductLink
+POST {{baseUrl}}/product/amazon
+Content-Type: application/json
+
+{
+    "url": "https://amzn.to/4m0wRSW"
 }
 
 ###

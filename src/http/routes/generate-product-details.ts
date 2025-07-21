@@ -49,3 +49,51 @@ export const createProductLink: FastifyPluginCallbackZod = async (app) => {
     }
   );
 };
+
+export const generateAmazonLink = async (shortLink: string) => {
+  const newTag = "guiallan-20";
+
+  try {
+    const response = await fetch(shortLink, { redirect: "manual" });
+
+    if (response.status >= 300 && response.status < 400) {
+      let finalUrl = response.headers.get("Location");
+
+      // Substitui ou adiciona o tag
+      if (finalUrl) {
+        if (finalUrl.includes("tag=")) {
+          finalUrl = finalUrl.replace(/tag=[^&]+/, `tag=${newTag}`);
+        } else {
+          finalUrl += `&tag=${newTag}`;
+        }
+      }
+
+      return finalUrl;
+    } else {
+      return "Não foi possível extrair o link de destino.";
+    }
+  } catch (error) {
+    console.error("Erro ao seguir o link curto:", error);
+    return "Erro ao seguir o link curto.";
+  }
+};
+
+export const getFinalAmazonProductLink: FastifyPluginCallbackZod = async (
+  app
+) => {
+  app.post(
+    "/product/amazon",
+    {
+      schema: {
+        body: z.object({
+          url: z.string().min(1),
+        }),
+      },
+    },
+    async (request) => {
+      const { url } = request.body;
+
+      return generateAmazonLink(url);
+    }
+  );
+};

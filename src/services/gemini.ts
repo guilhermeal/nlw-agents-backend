@@ -1,6 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { env } from "../env.ts";
 import z from "zod";
+import { url } from "inspector";
+import { generateAmazonLink } from "../http/routes/generate-product-details.ts";
 
 const promptProduct = `INSTRUÇÕES: 
 
@@ -399,8 +401,22 @@ export const generateProductLink = async (message: string) => {
 
     // ✅ Validar com Zod
     const validatedResult = ProductAnalysisSchema.parse(jsonResult);
+    const marketplace = validatedResult.marketplace;
 
-    return validatedResult;
+    const parsedUrlLink = (url: string) => {
+      if (marketplace === "amazon") {
+        return generateAmazonLink(url);
+      }
+
+      return url;
+    };
+
+    const parsedResult = {
+      ...validatedResult,
+      url: parsedUrlLink(validatedResult.url),
+    };
+
+    return parsedResult;
   } catch (error) {
     console.error("Erro ao processar resposta da IA:", error);
 

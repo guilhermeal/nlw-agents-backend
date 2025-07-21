@@ -16,7 +16,7 @@ import { uploadAudioRoute } from "./http/routes/upload-audio.ts";
 import { authenticateToken } from "./middleware/auth.ts";
 import { getLocalIP } from "./utils/network.ts";
 import { getRoomTranscription } from "./http/routes/get-room-transcription.ts";
-import { createProductLink } from "./http/routes/generate-product-details.ts";
+import { createProductLink, getFinalAmazonProductLink } from "./http/routes/generate-product-details.ts";
 
 const app = fastify({
   logger: true,
@@ -37,6 +37,7 @@ app.get("/health", () => {
 
 // 📊 Rotas públicas (sem autenticação)
 app.register(createProductLink);
+app.register(getFinalAmazonProductLink);
 
 // 🔐 Rotas protegidas (com token simples)
 app.register(async function protectedRoutes(app) {
