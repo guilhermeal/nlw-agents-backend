@@ -1,8 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
-import { env } from "../env.ts";
 import z from "zod";
-import { url } from "inspector";
-import { generateAmazonLink } from "../http/routes/generate-product-details.ts";
+import { env } from "../env.ts";
+
+interface ProductLinkProps {
+  instance: string;
+  chatGroupId: string;
+  url: string;
+  marketplace: "amazon" | "mercado-livre" | "shopee" | "aliexpress";
+  value: number;
+  product: string;
+  emoji: string;
+  storytelling: string;
+  coupons?: string | null;
+  valueBefore?: number;
+}
 
 const promptProduct = `INSTRUÇÕES: 
 
@@ -210,19 +221,6 @@ A saída deve seguir sempre exclusivamente como o formato abaixo:
 }
 `;
 
-const ProductAnalysisSchema = z.object({
-  instance: z.string(),
-  chatGroupId: z.string(),
-  url: z.string().url(),
-  marketplace: z.enum(["amazon", "mercado-livre", "shopee", "aliexpress"]),
-  value: z.number().nullable(),
-  valueBefore: z.number().nullable().optional(),
-  product: z.string(),
-  emoji: z.string(),
-  storytelling: z.string(),
-  coupons: z.string().nullable(),
-});
-
 const gemini = new GoogleGenAI({
   apiKey: env.GEMINI_API_KEY,
 });
@@ -349,9 +347,9 @@ export const generateSummary = async (transcriptions: string[]) => {
   return response.text;
 };
 
-export const generateProductLink = async (message: string) => {
-  // const context = message.join("\n\n");
-
+export const generateProductLink = async (
+  message: string
+): Promise<ProductLinkProps | undefined> => {
   const prompt = `${promptProduct}
     
     MENSAGEM:
@@ -374,64 +372,30 @@ export const generateProductLink = async (message: string) => {
       throw new Error("Falha ao gerar resposta pelo Gemini");
     }
 
-    // ✅ Limpar possível markdown ou texto extra
     let cleanResponse = response.text.trim();
 
-    // Remover markdown se existir
     if (cleanResponse.startsWith("```json")) {
       cleanResponse = cleanResponse
         .replace(/```json\s*/, "")
         .replace(/```\s*$/, "");
     }
 
-    // Remover outros possíveis prefixos/sufixos
     cleanResponse = cleanResponse.replace(/^[^{]*/, "").replace(/[^}]*$/, "");
 
-    // ✅ Fazer parse do JSON
     const jsonResult = JSON.parse(cleanResponse);
 
-    // ✅ Validar se é "Marketplace inválido" ou "Anuncio invalido"
-    if (
-      typeof jsonResult === "string" &&
-      (jsonResult.includes("Marketplace inválido") ||
-        jsonResult.includes("Anuncio invalido"))
-    ) {
-      return { error: jsonResult };
-    }
+    // if (
+    //   typeof jsonResult === "string" &&
+    //   (jsonResult.includes("Marketplace inválido") ||
+    //     jsonResult.includes("Anuncio invalido"))
+    // ) {
+    //   return { error: jsonResult };
+    // }
 
-    // ✅ Validar com Zod
-    const validatedResult = ProductAnalysisSchema.parse(jsonResult);
-    const marketplace = validatedResult.marketplace;
 
-    const parsedUrlLink = (url: string) => {
-      if (marketplace === "amazon") {
-        return generateAmazonLink(url);
-      }
-
-      return url;
-    };
-
-    const parsedResult = {
-      ...validatedResult,
-      url: parsedUrlLink(validatedResult.url),
-    };
-
-    return parsedResult;
+    return jsonResult;
   } catch (error) {
     console.error("Erro ao processar resposta da IA:", error);
-
-    // Se for erro de JSON parse
-    if (error instanceof SyntaxError) {
-      console.error(error);
-      return { error: "Resposta da IA não é um JSON válido" };
-    }
-
-    // Se for erro de validação Zod
-    if (error instanceof z.ZodError) {
-      console.error("Erro de validação:", error.errors);
-      return { error: "Formato de resposta inválido da IA" };
-    }
-
-    return { error: "Erro interno ao processar análise do produto" };
+    return undefined;
   }
 };

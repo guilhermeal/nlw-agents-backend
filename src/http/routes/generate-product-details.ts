@@ -27,8 +27,26 @@ export const createProductLink: FastifyPluginCallbackZod = async (app) => {
       }
 
       const parsedMessage = JSON.stringify(messageToJson(message), null, 2);
-
       const answer = await generateProductLink(parsedMessage);
+
+      if (!answer) {
+        return false;
+      }
+
+      const marketplace = answer.marketplace;
+
+      const parsedUrlLink = async (url: string) => {
+        if (marketplace === "amazon") {
+          return await generateAmazonLink(url);
+        }
+
+        return url;
+      };
+
+      const parsedResult = {
+        ...answer,
+        url: await parsedUrlLink(answer.url),
+      };
 
       // const result = await db
       //   .insert(schema.questions)
@@ -45,7 +63,7 @@ export const createProductLink: FastifyPluginCallbackZod = async (app) => {
       //   throw new Error("Failed to create new question.");
       // }
 
-      return reply.status(201).send(answer);
+      return reply.status(201).send(parsedResult);
     }
   );
 };
@@ -73,7 +91,7 @@ export const generateAmazonLink = async (shortLink: string) => {
       return "Não foi possível extrair o link de destino.";
     }
   } catch (error) {
-    console.error("Erro ao seguir o link curto:", error);
+    console.error("\n\n Erro ao seguir o link curto:", error);
     return "Erro ao seguir o link curto.";
   }
 };
