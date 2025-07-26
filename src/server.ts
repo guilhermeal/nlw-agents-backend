@@ -9,14 +9,19 @@ import {
 import { env } from "./env.ts";
 import { createQuestionRoute } from "./http/routes/create-question.ts";
 import { createRoomRoute } from "./http/routes/create-room.ts";
+import {
+  checkGroupWhatsAppInfoByInviteCode,
+  createProductLink,
+  getFinalAmazonProductLink,
+} from "./http/routes/generate-product-details.ts";
 import { getRoomChunksSummary } from "./http/routes/get-room-chunks-summary.ts";
 import { getRoomQuestions } from "./http/routes/get-room-questions.ts";
+import { getRoomTranscription } from "./http/routes/get-room-transcription.ts";
 import { getRoomAndQuestions, getRoomsRoute } from "./http/routes/get-rooms.ts";
 import { uploadAudioRoute } from "./http/routes/upload-audio.ts";
 import { authenticateToken } from "./middleware/auth.ts";
+import { startWhatsapp } from "./services/whatsapp.ts";
 import { getLocalIP } from "./utils/network.ts";
-import { getRoomTranscription } from "./http/routes/get-room-transcription.ts";
-import { createProductLink, getFinalAmazonProductLink } from "./http/routes/generate-product-details.ts";
 
 const app = fastify({
   logger: true,
@@ -35,9 +40,12 @@ app.get("/health", () => {
   return "OK";
 });
 
+startWhatsapp();
+
 // 📊 Rotas públicas (sem autenticação)
 app.register(createProductLink);
 app.register(getFinalAmazonProductLink);
+app.register(checkGroupWhatsAppInfoByInviteCode);
 
 // 🔐 Rotas protegidas (com token simples)
 app.register(async function protectedRoutes(app) {
@@ -64,10 +72,10 @@ const start = async () => {
     await app.listen({ port, host });
 
     const localIP = getLocalIP();
-    console.log(`🚀 Server is running on:`);
+    console.log(`\n 🚀 Server is running on:`);
     console.log(`   Local:    http://localhost:${port}`);
     console.log(`   Network:  http://${localIP}:${port}`);
-    console.log(`🔐 Auth Token: ${env.AUTH_TOKEN}`);
+    console.log(`🔐 Auth Token: ${env.AUTH_TOKEN}\n `);
   } catch (err) {
     app.log.error(err);
     process.exit(1);

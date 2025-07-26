@@ -109,6 +109,13 @@ Content-Type: application/json
 
 ###
 
+# Get ChatId bu Invitation Code
+# @name getChatIdByInviteCOde
+GET {{baseUrl}}/product/whatsapp/invite/J9l0ExczCqFDdazKbcVwoq
+Content-Type: application/json
+
+###
+
 # ❌ Teste sem token (deve dar erro 401)
 # @name testWithoutToken
 GET {{baseUrl}}/rooms/6b70810c-74ff-4ce9-2665-dbe392f0610b
